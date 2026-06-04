@@ -422,7 +422,10 @@
 "Assets/Scripts/PipeMover.cs"
 "Assets/Scripts/PipeSpawner.cs"
 "Assets/Scripts/PlayerController.cs"
+"Assets/Scripts/ScoreManager.cs"
+"Assets/Scripts/ScoreTrigger.cs"
 "Assets/Scripts/Scroller.cs"
+"Assets/Scripts/UIManager.cs"
 -langversion:9.0
 /deterministic
 /optimize+
