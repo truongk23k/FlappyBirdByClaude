@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
         if (pipeSpawner) pipeSpawner.enabled = false;
         SetScrollerMultiplier(0.5f);
         UIManager.Instance?.HideGameOver();
+        UIManager.Instance?.ShowIdle();
     }
 
     void EnterPlaying()
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviour
         if (player) player.OnStartPlaying();
         if (pipeSpawner) pipeSpawner.enabled = true;
         SetScrollerMultiplier(1f);
+        UIManager.Instance?.HideIdle();
     }
 
     public void OnPlayerDied()

@@ -9,6 +9,9 @@ public class UIManager : MonoBehaviour
     public RectTransform scoreDisplay;
     public Sprite[] digitSprites;
 
+    [Header("Idle Panel")]
+    public GameObject idlePanel;
+
     [Header("Game Over Panel")]
     public GameObject gameOverPanel;
     public RectTransform gameOverScoreDisplay;
@@ -32,6 +35,7 @@ public class UIManager : MonoBehaviour
         gameOverBestImages  = BuildDigitImagesFor(gameOverBestDisplay);
         UpdateScore(0);
         if (gameOverPanel) gameOverPanel.SetActive(false);
+        if (idlePanel)     idlePanel.SetActive(true);   // game starts in Idle
     }
 
     Image[] BuildDigitImagesFor(RectTransform parent)
@@ -76,6 +80,9 @@ public class UIManager : MonoBehaviour
 
     public void UpdateScore(int score) => SetDigitDisplay(digitImages, score);
 
+    public void ShowIdle()       { if (idlePanel)     idlePanel.SetActive(true); }
+    public void HideIdle()       { if (idlePanel)     idlePanel.SetActive(false); }
+
     public void ShowGameOver()
     {
         if (gameOverPanel) gameOverPanel.SetActive(true);
@@ -86,8 +93,5 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void HideGameOver()
-    {
-        if (gameOverPanel) gameOverPanel.SetActive(false);
-    }
+    public void HideGameOver()   { if (gameOverPanel) gameOverPanel.SetActive(false); }
 }
