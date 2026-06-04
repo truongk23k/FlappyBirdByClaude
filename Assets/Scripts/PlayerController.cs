@@ -28,12 +28,14 @@ public class PlayerController : MonoBehaviour
     float frameTimer;
     int frameIndex;
     float idleStartY;
+    Vector3 spawnPosition;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb.simulated = false;   // held inactive until GameManager enters Playing state
+        spawnPosition = transform.position;
         idleStartY = transform.position.y;
     }
 
@@ -92,6 +94,19 @@ public class PlayerController : MonoBehaviour
         float targetAngle = Mathf.Clamp(rb.velocity.y * rotationMultiplier, downAngle, upAngle);
         float currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, rotationSpeed * Time.deltaTime);
         transform.rotation = Quaternion.Euler(0f, 0f, currentAngle);
+    }
+
+    // Called by GameManager on restart.
+    public void ResetPlayer()
+    {
+        isDead = false;
+        rb.simulated = false;
+        rb.velocity = Vector2.zero;
+        transform.SetPositionAndRotation(spawnPosition, Quaternion.identity);
+        frameTimer = 0f;
+        frameIndex = 0;
+        if (animationFrames != null && animationFrames.Length > 0 && spriteRenderer != null)
+            spriteRenderer.sprite = animationFrames[0];
     }
 
     // Called by collision handlers and by GameManager if needed.

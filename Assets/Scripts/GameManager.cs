@@ -31,6 +31,25 @@ public class GameManager : MonoBehaviour
         if (state == GameState.Idle &&
             (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
             EnterPlaying();
+        else if (state == GameState.GameOver &&
+            (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
+            Restart();
+    }
+
+    void Restart()
+    {
+        if (player) player.ResetPlayer();
+        ScoreManager.Instance?.ResetScore();
+
+        foreach (var pm in FindObjectsOfType<PipeMover>())
+            Destroy(pm.gameObject);
+
+        if (pipeSpawner) pipeSpawner.ResetSpawner();
+
+        foreach (var s in scrollers)
+            if (s) s.ResetTiles();
+
+        EnterIdle();
     }
 
     void EnterIdle()

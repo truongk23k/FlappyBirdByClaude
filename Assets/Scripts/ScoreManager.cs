@@ -17,6 +17,12 @@ public class ScoreManager : MonoBehaviour
         BestScore = PlayerPrefs.GetInt(BEST_KEY, 0);
     }
 
+    public void ResetScore()
+    {
+        CurrentScore = 0;
+        UIManager.Instance?.UpdateScore(0);
+    }
+
     public void AddScore()
     {
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;

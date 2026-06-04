@@ -10,6 +10,8 @@ public class PipeSpawner : MonoBehaviour
 
     float timer;
 
+    public void ResetSpawner() { timer = 0f; }
+
     void Update()
     {
         timer += Time.deltaTime;

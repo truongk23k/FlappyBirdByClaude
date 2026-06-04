@@ -7,12 +7,24 @@ public class Scroller : MonoBehaviour
     public float speedMultiplier = 0.5f;  // GameManager controls this at runtime
 
     Transform[] tiles;
+    Vector3[] initialPositions;
 
     void Awake()
     {
         tiles = new Transform[transform.childCount];
+        initialPositions = new Vector3[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
+        {
             tiles[i] = transform.GetChild(i);
+            initialPositions[i] = tiles[i].position;
+        }
+    }
+
+    public void ResetTiles()
+    {
+        if (tiles == null || initialPositions == null) return;
+        for (int i = 0; i < tiles.Length; i++)
+            if (tiles[i]) tiles[i].position = initialPositions[i];
     }
 
     void Update()
