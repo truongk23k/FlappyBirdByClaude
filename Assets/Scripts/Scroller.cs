@@ -4,6 +4,7 @@ public class Scroller : MonoBehaviour
 {
     public float speed = 3f;
     public float tileWidth = 18f;
+    public float speedMultiplier = 0.5f;  // GameManager controls this at runtime
 
     Transform[] tiles;
 
@@ -16,7 +17,7 @@ public class Scroller : MonoBehaviour
 
     void Update()
     {
-        float delta = speed * Time.deltaTime;
+        float delta = speed * speedMultiplier * Time.deltaTime;
         foreach (var tile in tiles)
             tile.position += Vector3.left * delta;
 

@@ -17,22 +17,36 @@ public class PlayerController : MonoBehaviour
     public Sprite[] animationFrames;
     public float frameRate = 0.1f;
 
+    [Header("Idle Bob")]
+    public float bobAmplitude = 0.2f;
+    public float bobFrequency = 2f;
+
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
     bool isDead;
 
     float frameTimer;
     int frameIndex;
+    float idleStartY;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        rb.simulated = false;   // held inactive until GameManager enters Playing state
+        idleStartY = transform.position.y;
     }
 
     void Update()
     {
         UpdateAnimation();
+
+        var gm = GameManager.Instance;
+        if (gm != null && gm.State == GameState.Idle)
+        {
+            UpdateBob();
+            return;
+        }
 
         if (isDead) return;
 
@@ -40,6 +54,19 @@ public class PlayerController : MonoBehaviour
             Flap();
 
         UpdateRotation();
+    }
+
+    void UpdateBob()
+    {
+        float y = idleStartY + Mathf.Sin(Time.time * bobFrequency) * bobAmplitude;
+        transform.position = new Vector3(transform.position.x, y, transform.position.z);
+    }
+
+    // Called by GameManager when transitioning Idle -> Playing.
+    public void OnStartPlaying()
+    {
+        rb.simulated = true;
+        transform.rotation = Quaternion.identity;
     }
 
     void Flap()
@@ -67,13 +94,13 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, currentAngle);
     }
 
-    // Called by collision handlers and, later, by GameManager (M8).
+    // Called by collision handlers and by GameManager if needed.
     public void Die()
     {
         if (isDead) return;
         isDead = true;
         rb.simulated = false;
-        Debug.Log("GameOver"); // M8 will replace with GameManager.Instance.TriggerGameOver()
+        GameManager.Instance?.OnPlayerDied();
     }
 
     void OnCollisionEnter2D(Collision2D col)

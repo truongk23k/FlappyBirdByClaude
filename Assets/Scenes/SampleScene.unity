@@ -161,6 +161,8 @@ MonoBehaviour:
   rotationSpeed: 8
   animationFrames: []
   frameRate: 0.1
+  bobAmplitude: 0.2
+  bobFrequency: 2
 --- !u!212 &102999083
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -321,6 +323,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   tileWidth: 18
+  speedMultiplier: 0.5
 --- !u!4 &151065695
 Transform:
   m_ObjectHideFlags: 0
@@ -468,6 +471,52 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &507820191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 507820193}
+  - component: {fileID: 507820192}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &507820192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507820191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b1fe1d7c12c7bb4b94d42ea51d39faf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1812913557}
+  pipeSpawner: {fileID: 1633268045}
+--- !u!4 &507820193
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507820191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,6 +724,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.5
   tileWidth: 18
+  speedMultiplier: 0.5
 --- !u!4 &1123680529
 Transform:
   m_ObjectHideFlags: 0
@@ -997,6 +1047,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 30265f5c0825a8b4fa53b969956bd9d9, type: 3}
   - {fileID: 21300000, guid: f528780dfef097b448febdf8867f7675, type: 3}
   frameRate: 0.1
+  bobAmplitude: 0.2
+  bobFrequency: 2
 --- !u!58 &1812913558
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1031,7 +1083,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.18
 --- !u!50 &1812913559
 Rigidbody2D:
   serializedVersion: 4
@@ -1136,3 +1188,4 @@ SceneRoots:
   - {fileID: 151065695}
   - {fileID: 102999086}
   - {fileID: 1633268046}
+  - {fileID: 507820193}
