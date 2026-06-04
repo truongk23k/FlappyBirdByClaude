@@ -7,9 +7,16 @@ public class UIManager : MonoBehaviour
 
     [Header("Score Display")]
     public RectTransform scoreDisplay;
-    public Sprite[] digitSprites;       // indices 0-9 match digit value
+    public Sprite[] digitSprites;
+
+    [Header("Game Over Panel")]
+    public GameObject gameOverPanel;
+    public RectTransform gameOverScoreDisplay;
+    public RectTransform gameOverBestDisplay;
 
     Image[] digitImages;
+    Image[] gameOverScoreImages;
+    Image[] gameOverBestImages;
     const int MAX_DIGITS = 3;
 
     void Awake()
@@ -20,56 +27,67 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        BuildDigitImages();
+        digitImages         = BuildDigitImagesFor(scoreDisplay);
+        gameOverScoreImages = BuildDigitImagesFor(gameOverScoreDisplay);
+        gameOverBestImages  = BuildDigitImagesFor(gameOverBestDisplay);
         UpdateScore(0);
+        if (gameOverPanel) gameOverPanel.SetActive(false);
     }
 
-    void BuildDigitImages()
+    Image[] BuildDigitImagesFor(RectTransform parent)
     {
-        // Clear any existing children (safe for future restarts)
-        for (int i = scoreDisplay.childCount - 1; i >= 0; i--)
-            Destroy(scoreDisplay.GetChild(i).gameObject);
-
+        if (parent == null) return null;
+        for (int i = parent.childCount - 1; i >= 0; i--)
+            Destroy(parent.GetChild(i).gameObject);
         float w = (digitSprites != null && digitSprites.Length > 0) ? digitSprites[0].rect.width  : 24f;
         float h = (digitSprites != null && digitSprites.Length > 0) ? digitSprites[0].rect.height : 36f;
-
-        digitImages = new Image[MAX_DIGITS];
+        var images = new Image[MAX_DIGITS];
         for (int i = 0; i < MAX_DIGITS; i++)
         {
             var go = new GameObject($"Digit_{i}", typeof(RectTransform));
-            go.transform.SetParent(scoreDisplay, false);
-
+            go.transform.SetParent(parent, false);
             var img = go.AddComponent<Image>();
             img.preserveAspect = true;
             img.raycastTarget  = false;
-
             var le = go.AddComponent<LayoutElement>();
-            le.minWidth        = w * 2f;
-            le.minHeight       = h * 2f;
-            le.preferredWidth  = w * 2f;
-            le.preferredHeight = h * 2f;
-
-            digitImages[i] = img;
+            le.minWidth = le.preferredWidth  = w * 2f;
+            le.minHeight = le.preferredHeight = h * 2f;
+            images[i] = img;
             go.SetActive(false);
         }
+        return images;
     }
 
-    public void UpdateScore(int score)
+    void SetDigitDisplay(Image[] images, int score)
     {
-        if (digitImages == null || digitSprites == null) return;
+        if (images == null || digitSprites == null) return;
         string s = score.ToString();
-        for (int i = 0; i < digitImages.Length; i++)
+        for (int i = 0; i < images.Length; i++)
         {
             if (i < s.Length)
             {
                 int d = s[i] - '0';
-                digitImages[i].sprite = (d < digitSprites.Length) ? digitSprites[d] : null;
-                digitImages[i].gameObject.SetActive(true);
+                images[i].sprite = (d < digitSprites.Length) ? digitSprites[d] : null;
+                images[i].gameObject.SetActive(true);
             }
-            else
-            {
-                digitImages[i].gameObject.SetActive(false);
-            }
+            else images[i].gameObject.SetActive(false);
         }
+    }
+
+    public void UpdateScore(int score) => SetDigitDisplay(digitImages, score);
+
+    public void ShowGameOver()
+    {
+        if (gameOverPanel) gameOverPanel.SetActive(true);
+        if (ScoreManager.Instance != null)
+        {
+            SetDigitDisplay(gameOverScoreImages, ScoreManager.Instance.CurrentScore);
+            SetDigitDisplay(gameOverBestImages,  ScoreManager.Instance.BestScore);
+        }
+    }
+
+    public void HideGameOver()
+    {
+        if (gameOverPanel) gameOverPanel.SetActive(false);
     }
 }

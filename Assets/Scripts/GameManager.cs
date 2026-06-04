@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
 
     GameState state;
     Scroller[] scrollers;
-
     public GameState State => state;
 
     void Awake()
@@ -39,6 +38,7 @@ public class GameManager : MonoBehaviour
         state = GameState.Idle;
         if (pipeSpawner) pipeSpawner.enabled = false;
         SetScrollerMultiplier(0.5f);
+        UIManager.Instance?.HideGameOver();
     }
 
     void EnterPlaying()
@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
         SetScrollerMultiplier(0f);
         foreach (var pipe in FindObjectsOfType<PipeMover>())
             if (pipe) pipe.enabled = false;
+        UIManager.Instance?.ShowGameOver();
     }
 
     void SetScrollerMultiplier(float multiplier)
