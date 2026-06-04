@@ -67,16 +67,18 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, currentAngle);
     }
 
+    // Called by collision handlers and, later, by GameManager (M8).
     public void Die()
     {
         if (isDead) return;
         isDead = true;
         rb.simulated = false;
+        Debug.Log("GameOver"); // M8 will replace with GameManager.Instance.TriggerGameOver()
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        Die();
-        Debug.Log("GameOver");
+        if (col.gameObject.CompareTag("Ground"))
+            Die();
     }
 }
