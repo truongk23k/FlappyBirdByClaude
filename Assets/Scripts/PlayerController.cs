@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        rb.simulated = false;   // held inactive until GameManager enters Playing state
+        rb.simulated = false;
         spawnPosition = transform.position;
         idleStartY = transform.position.y;
     }
@@ -64,7 +64,6 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(transform.position.x, y, transform.position.z);
     }
 
-    // Called by GameManager when transitioning Idle -> Playing.
     public void OnStartPlaying()
     {
         rb.simulated = true;
@@ -74,6 +73,7 @@ public class PlayerController : MonoBehaviour
     void Flap()
     {
         rb.velocity = new Vector2(0f, flapForce);
+        AudioManager.Instance?.PlayWing();   // Playing state only — Idle guard above prevents bob flap
     }
 
     void UpdateAnimation()
@@ -96,7 +96,6 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, currentAngle);
     }
 
-    // Called by GameManager on restart.
     public void ResetPlayer()
     {
         isDead = false;
@@ -109,12 +108,12 @@ public class PlayerController : MonoBehaviour
             spriteRenderer.sprite = animationFrames[0];
     }
 
-    // Called by collision handlers and by GameManager if needed.
     public void Die()
     {
         if (isDead) return;
         isDead = true;
         rb.simulated = false;
+        AudioManager.Instance?.PlayHit();    // also schedules die.ogg after 0.3 s internally
         GameManager.Instance?.OnPlayerDied();
     }
 

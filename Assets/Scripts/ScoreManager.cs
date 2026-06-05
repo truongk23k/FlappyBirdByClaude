@@ -34,6 +34,7 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         Debug.Log($"Score: {CurrentScore}");
+        AudioManager.Instance?.PlayPoint();
         UIManager.Instance?.UpdateScore(CurrentScore);
     }
 }

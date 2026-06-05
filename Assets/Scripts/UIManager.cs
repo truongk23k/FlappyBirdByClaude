@@ -86,6 +86,7 @@ public class UIManager : MonoBehaviour
     public void ShowGameOver()
     {
         if (gameOverPanel) gameOverPanel.SetActive(true);
+        AudioManager.Instance?.PlaySwoosh();
         if (ScoreManager.Instance != null)
         {
             SetDigitDisplay(gameOverScoreImages, ScoreManager.Instance.CurrentScore);
