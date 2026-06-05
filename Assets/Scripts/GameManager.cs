@@ -1,5 +1,14 @@
 using UnityEngine;
 
+[System.Serializable]
+public struct DifficultyStep
+{
+    public int   scoreThreshold;
+    public float pipeSpeed;
+    public float spawnInterval;
+    public float gapSize;
+}
+
 public enum GameState { Idle, Playing, GameOver }
 
 public class GameManager : MonoBehaviour
@@ -10,14 +19,33 @@ public class GameManager : MonoBehaviour
     public PlayerController player;
     public PipeSpawner pipeSpawner;
 
+    [Header("Difficulty")]
+    public DifficultyStep[] difficultySteps;
+
     GameState state;
     Scroller[] scrollers;
+    int currentDifficultyIndex;
+
     public GameState State => state;
 
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        if (difficultySteps == null || difficultySteps.Length == 0)
+            SetDefaultDifficulty();
+    }
+
+    void SetDefaultDifficulty()
+    {
+        difficultySteps = new[]
+        {
+            new DifficultyStep { scoreThreshold = 0,  pipeSpeed = 3.0f, spawnInterval = 1.8f, gapSize = 3.5f },
+            new DifficultyStep { scoreThreshold = 10, pipeSpeed = 3.5f, spawnInterval = 1.6f, gapSize = 3.2f },
+            new DifficultyStep { scoreThreshold = 20, pipeSpeed = 4.0f, spawnInterval = 1.4f, gapSize = 3.0f },
+            new DifficultyStep { scoreThreshold = 30, pipeSpeed = 4.5f, spawnInterval = 1.3f, gapSize = 2.8f },
+            new DifficultyStep { scoreThreshold = 40, pipeSpeed = 5.0f, spawnInterval = 1.2f, gapSize = 2.6f },
+        };
     }
 
     void Start()
@@ -36,8 +64,44 @@ public class GameManager : MonoBehaviour
             Restart();
     }
 
+    // Called by ScoreManager every time the score changes.
+    public void OnScoreChanged(int score)
+    {
+        if (difficultySteps == null || difficultySteps.Length == 0) return;
+        for (int i = difficultySteps.Length - 1; i >= 0; i--)
+        {
+            if (score >= difficultySteps[i].scoreThreshold)
+            {
+                if (i != currentDifficultyIndex)
+                {
+                    currentDifficultyIndex = i;
+                    ApplyDifficulty(difficultySteps[i]);
+                }
+                break;
+            }
+        }
+    }
+
+    void ApplyDifficulty(DifficultyStep step)
+    {
+        if (pipeSpawner)
+        {
+            pipeSpawner.spawnInterval = step.spawnInterval;
+            pipeSpawner.pipeSpeed     = step.pipeSpeed;
+            pipeSpawner.gapSize       = step.gapSize;
+        }
+        // Ground scrolls with pipes for visual consistency; background stays constant.
+        foreach (var s in scrollers)
+            if (s != null && s.gameObject.name == "Ground")
+                s.speed = step.pipeSpeed;
+    }
+
     void Restart()
     {
+        currentDifficultyIndex = 0;
+        if (difficultySteps != null && difficultySteps.Length > 0)
+            ApplyDifficulty(difficultySteps[0]);
+
         if (player) player.ResetPlayer();
         ScoreManager.Instance?.ResetScore();
 

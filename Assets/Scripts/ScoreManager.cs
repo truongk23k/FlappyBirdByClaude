@@ -36,5 +36,6 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Score: {CurrentScore}");
         AudioManager.Instance?.PlayPoint();
         UIManager.Instance?.UpdateScore(CurrentScore);
+        GameManager.Instance?.OnScoreChanged(CurrentScore);
     }
 }

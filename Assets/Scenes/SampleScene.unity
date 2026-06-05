@@ -626,6 +626,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1812913557}
   pipeSpawner: {fileID: 1633268045}
+  difficultySteps:
+  - scoreThreshold: 0
+    pipeSpeed: 3
+    spawnInterval: 1.8
+    gapSize: 3.5
+  - scoreThreshold: 10
+    pipeSpeed: 3.5
+    spawnInterval: 1.6
+    gapSize: 3.2
+  - scoreThreshold: 20
+    pipeSpeed: 4
+    spawnInterval: 1.4
+    gapSize: 3
+  - scoreThreshold: 30
+    pipeSpeed: 4.5
+    spawnInterval: 1.3
+    gapSize: 2.8
+  - scoreThreshold: 40
+    pipeSpeed: 5
+    spawnInterval: 1.2
+    gapSize: 2.6
 --- !u!4 &507820193
 Transform:
   m_ObjectHideFlags: 0
@@ -1826,6 +1847,8 @@ MonoBehaviour:
   spawnX: 8
   gapMinY: -1.5
   gapMaxY: 1.5
+  pipeSpeed: 3
+  gapSize: 3.5
 --- !u!4 &1633268046
 Transform:
   m_ObjectHideFlags: 0
