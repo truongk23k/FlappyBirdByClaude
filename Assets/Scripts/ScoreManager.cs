@@ -1,4 +1,3 @@
-// M11
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
@@ -33,7 +32,6 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.SetInt(BEST_KEY, BestScore);
             PlayerPrefs.Save();
         }
-        Debug.Log($"Score: {CurrentScore}");
         AudioManager.Instance?.PlayPoint();
         UIManager.Instance?.UpdateScore(CurrentScore);
         GameManager.Instance?.OnScoreChanged(CurrentScore);

@@ -22,6 +22,8 @@ public class AudioManager : MonoBehaviour
         source = GetComponent<AudioSource>();
     }
 
+    public void StopAll()    { StopAllCoroutines(); }  // C3: called by GameManager.Restart()
+
     public void PlayWing()   => Play(wing);
     public void PlayPoint()  => Play(point);
     public void PlaySwoosh() => Play(swoosh);

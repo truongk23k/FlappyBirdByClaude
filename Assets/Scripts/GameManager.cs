@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [System.Serializable]
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     GameState state;
     Scroller[] scrollers;
     int currentDifficultyIndex;
+    bool canRestart;
 
     public GameState State => state;
 
@@ -59,12 +61,11 @@ public class GameManager : MonoBehaviour
         if (state == GameState.Idle &&
             (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
             EnterPlaying();
-        else if (state == GameState.GameOver &&
+        else if (state == GameState.GameOver && canRestart &&
             (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
             Restart();
     }
 
-    // Called by ScoreManager every time the score changes.
     public void OnScoreChanged(int score)
     {
         if (difficultySteps == null || difficultySteps.Length == 0) return;
@@ -90,7 +91,6 @@ public class GameManager : MonoBehaviour
             pipeSpawner.pipeSpeed     = step.pipeSpeed;
             pipeSpawner.gapSize       = step.gapSize;
         }
-        // Ground scrolls with pipes for visual consistency; background stays constant.
         foreach (var s in scrollers)
             if (s != null && s.gameObject.name == "Ground")
                 s.speed = step.pipeSpeed;
@@ -98,6 +98,9 @@ public class GameManager : MonoBehaviour
 
     void Restart()
     {
+        canRestart = false;
+        StopAllCoroutines();                    // C1: cancel ShowGameOverDelayed if still pending
+        AudioManager.Instance?.StopAll();       // C3: cancel delayed die.ogg
         currentDifficultyIndex = 0;
         if (difficultySteps != null && difficultySteps.Length > 0)
             ApplyDifficulty(difficultySteps[0]);
@@ -105,9 +108,7 @@ public class GameManager : MonoBehaviour
         if (player) player.ResetPlayer();
         ScoreManager.Instance?.ResetScore();
 
-        foreach (var pm in FindObjectsOfType<PipeMover>())
-            Destroy(pm.gameObject);
-
+        if (pipeSpawner) pipeSpawner.ReturnAllToPool();   // return frozen pipes to pool (no Destroy/Instantiate)
         if (pipeSpawner) pipeSpawner.ResetSpawner();
 
         foreach (var s in scrollers)
@@ -141,8 +142,17 @@ public class GameManager : MonoBehaviour
         if (pipeSpawner) pipeSpawner.enabled = false;
         SetScrollerMultiplier(0f);
         foreach (var pipe in FindObjectsOfType<PipeMover>())
-            if (pipe) pipe.enabled = false;
+            if (pipe) pipe.enabled = false;   // freeze visually during death animation
+        StartCoroutine(ShowGameOverDelayed());
+    }
+
+    IEnumerator ShowGameOverDelayed()
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (state != GameState.GameOver) yield break;   // C2: guard against restart during delay
+        if (player) player.FreezePhysics();
         UIManager.Instance?.ShowGameOver();
+        canRestart = true;                              // M1: only allow restart after panel appears
     }
 
     void SetScrollerMultiplier(float multiplier)

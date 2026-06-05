@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -85,7 +86,11 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOver()
     {
-        if (gameOverPanel) gameOverPanel.SetActive(true);
+        if (gameOverPanel)
+        {
+            gameOverPanel.SetActive(true);
+            StartCoroutine(ScaleInPanel(gameOverPanel.transform));
+        }
         AudioManager.Instance?.PlaySwoosh();
         if (ScoreManager.Instance != null)
         {
@@ -95,4 +100,18 @@ public class UIManager : MonoBehaviour
     }
 
     public void HideGameOver()   { if (gameOverPanel) gameOverPanel.SetActive(false); }
+
+    IEnumerator ScaleInPanel(Transform panel)
+    {
+        float elapsed = 0f;
+        const float duration = 0.3f;
+        panel.localScale = Vector3.zero;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            panel.localScale = Vector3.one * Mathf.SmoothStep(0f, 1f, elapsed / duration);
+            yield return null;
+        }
+        panel.localScale = Vector3.one;
+    }
 }

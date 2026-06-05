@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour
     void UpdateAnimation()
     {
         if (animationFrames == null || animationFrames.Length == 0) return;
+        if (isDead) return;   // M3: freeze animation on death; FreezePhysics() sets midflap
 
         frameTimer += Time.deltaTime;
         if (frameTimer >= frameRate)
@@ -108,12 +109,22 @@ public class PlayerController : MonoBehaviour
             spriteRenderer.sprite = animationFrames[0];
     }
 
+    // Called by GameManager after the 0.5 s death delay.
+    public void FreezePhysics()
+    {
+        rb.simulated = false;
+        // Set midflap sprite per GDD ("frozen on midflap during GameOver")
+        if (animationFrames != null && animationFrames.Length > 1 && spriteRenderer != null)
+            spriteRenderer.sprite = animationFrames[1];
+    }
+
     public void Die()
     {
         if (isDead) return;
         isDead = true;
-        rb.simulated = false;
-        AudioManager.Instance?.PlayHit();    // also schedules die.ogg after 0.3 s internally
+        // Physics stays active so the bird falls naturally for the death animation.
+        // GameManager.ShowGameOverDelayed() will call FreezePhysics after 0.5 s.
+        AudioManager.Instance?.PlayHit();
         GameManager.Instance?.OnPlayerDied();
     }
 

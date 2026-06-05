@@ -29,6 +29,7 @@ public class Scroller : MonoBehaviour
 
     void Update()
     {
+        if (speedMultiplier == 0f) return;   // P2: skip entirely when stopped
         float delta = speed * speedMultiplier * Time.deltaTime;
         foreach (var tile in tiles)
             tile.position += Vector3.left * delta;
