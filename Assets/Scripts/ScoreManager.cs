@@ -16,6 +16,9 @@ public class ScoreManager : MonoBehaviour
         BestScore = PlayerPrefs.GetInt(BEST_KEY, 0);
     }
 
+    void OnApplicationPause(bool paused) { if (paused) PlayerPrefs.Save(); }
+    void OnApplicationQuit()             { PlayerPrefs.Save(); }
+
     public void ResetScore()
     {
         CurrentScore = 0;
@@ -30,7 +33,7 @@ public class ScoreManager : MonoBehaviour
         {
             BestScore = CurrentScore;
             PlayerPrefs.SetInt(BEST_KEY, BestScore);
-            PlayerPrefs.Save();
+            // Save() deferred to app pause/quit to avoid synchronous disk I/O on the main thread
         }
         AudioManager.Instance?.PlayPoint();
         UIManager.Instance?.UpdateScore(CurrentScore);

@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     int frameIndex;
     float idleStartY;
     Vector3 spawnPosition;
+    float flapBufferTimer;
+    const float FLAP_BUFFER = 0.15f;
 
     void Awake()
     {
@@ -43,6 +45,12 @@ public class PlayerController : MonoBehaviour
     {
         UpdateAnimation();
 
+        // Buffer input before state checks so a tap that arrives during a lag frame
+        // or in the same frame as Idle→Playing transition is never lost.
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+            flapBufferTimer = FLAP_BUFFER;
+        flapBufferTimer -= Time.deltaTime;
+
         var gm = GameManager.Instance;
         if (gm != null && gm.State == GameState.Idle)
         {
@@ -52,8 +60,11 @@ public class PlayerController : MonoBehaviour
 
         if (isDead) return;
 
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        if (flapBufferTimer > 0f)
+        {
+            flapBufferTimer = 0f;
             Flap();
+        }
 
         UpdateRotation();
     }
@@ -100,6 +111,7 @@ public class PlayerController : MonoBehaviour
     public void ResetPlayer()
     {
         isDead = false;
+        flapBufferTimer = 0f;
         rb.simulated = false;
         rb.velocity = Vector2.zero;
         transform.SetPositionAndRotation(spawnPosition, Quaternion.identity);
